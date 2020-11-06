@@ -3,8 +3,8 @@
 
 auto main(int argc, char* argv[]) -> int
 {
-    if (argc == 0) {
-        return 1;
+    if (argc != 3) {
+        throw std::logic_error{"Incorrect amount of arguments."};
     }
 
     auto const a = std::stoi(argv[1]);
