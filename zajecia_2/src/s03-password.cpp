@@ -1,15 +1,20 @@
 #include <iostream>
 #include <string>
 
+auto enter_password() -> std::string
+{
+    std::cout << "password: ";
+    auto input = std::string{};
+    std::getline(std::cin, input);
+    return input;
+}
 
 auto main() -> int
 {
     while (true) {
-        std::cout << "password: ";
-        auto input = std::string{};
-        std::getline(std::cin, input);
-        if (input == "student") {
-            std::cout << "ok!";
+        auto password = enter_password();
+        if (password == "student") {
+            std::cout << "ok!\n";
             break;
         }
     }
