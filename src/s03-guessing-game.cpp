@@ -16,7 +16,7 @@ auto main() -> int
     std::uniform_int_distribution<int> rnd(1, 100);
     auto const pc_number = rnd(rd);
     while (true) {
-        auto user_number = guess_number();
+        auto const user_number = guess_number();
         if (user_number < pc_number) {
             std::cout << "number too small!\n";
         } else if (user_number > pc_number) {
