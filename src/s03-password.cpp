@@ -9,11 +9,16 @@ auto enter_password() -> std::string
     return input;
 }
 
-auto main() -> int
+auto main(int argc, char* argv[]) -> int
 {
+    if (argc != 2) {
+        throw std::logic_error{"Invalid amount of arguments."};
+    }
+
+
     while (true) {
         auto password = enter_password();
-        if (password == "student") {
+        if (password == std::string{argv[1]}) {
             std::cout << "ok!\n";
             break;
         }

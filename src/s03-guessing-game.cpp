@@ -1,17 +1,19 @@
 #include <iostream>
-#include <string>
 #include <random>
+#include <string>
 
-auto guess_number() -> int {
+auto guess_number() -> int
+{
     std::cout << "guess: ";
     auto input = std::string{};
     std::getline(std::cin, input);
     return std::stoi(input);
 }
 
-auto main() -> int {
+auto main() -> int
+{
     std::random_device rd;
-    std::uniform_int_distribution<int> rnd (1, 100);
+    std::uniform_int_distribution<int> rnd(1, 100);
     auto const pc_number = rnd(rd);
     while (true) {
         auto user_number = guess_number();
@@ -23,6 +25,6 @@ auto main() -> int {
             std::cout << "just right!\n";
             break;
         }
-    return 0;
     }
+    return 0;
 }
