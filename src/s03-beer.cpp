@@ -10,7 +10,7 @@ auto main(int argc, char* argv[]) -> int
     while (bottle_no > 0) {
         std::cout << bottle_no << " bottles of beer on the wall, " << bottle_no
                   << " bottles of beer.\n";
-        std::cout << "Take one down, pass it around, " << bottle_no - 1
+        std::cout << "Take one down, pass it around, " << --bottle_no
                   << " bottles of beer on the wall...\n";
         --bottle_no;
     }
