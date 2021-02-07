@@ -1,9 +1,8 @@
 /*
  * A reverse-polish notation calculator.
  */
-
+#include <s22020/RPN_calculator.h>
 #include <math.h>
-
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -23,9 +22,22 @@ auto pop_top(std::stack<double>& stack) -> double
     return element;
 }
 
+s22020::rpn_calculator::Element::~Element()
+{}
 
-auto evaluate_addition(std::stack<double>& stack) -> void
-{
+s22020::rpn_calculator::Literal::Literal(double const v) : value{v}
+{}
+
+auto s22020::rpn_calculator::Literal::evaluate(stack_type& stack) const -> void {
+    stack.push(value);
+}
+
+auto s22020::rpn_calculator::Print::evaluate(stack_type& stack) const -> void {
+    std::cout << stack.top() << "\n";
+}
+
+
+auto s22020::rpn_calculator::Addition::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for +"};
     }
@@ -34,8 +46,7 @@ auto evaluate_addition(std::stack<double>& stack) -> void
     stack.push(a + b);
 }
 
-auto evaluate_subtraction(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Subtraction::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for -"};
     }
@@ -44,8 +55,7 @@ auto evaluate_subtraction(std::stack<double>& stack) -> void
     stack.push(a - b);
 }
 
-auto evaluate_multiplication(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Multiplication::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for *"};
     }
@@ -54,8 +64,7 @@ auto evaluate_multiplication(std::stack<double>& stack) -> void
     stack.push(a * b);
 }
 
-auto evaluate_division(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Division::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for /"};
     }
@@ -64,8 +73,7 @@ auto evaluate_division(std::stack<double>& stack) -> void
     stack.push(a / b);
 }
 
-auto evaluate_int_division(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Int_Division::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for //"};
     }
@@ -74,18 +82,16 @@ auto evaluate_int_division(std::stack<double>& stack) -> void
     stack.push(floor(a / b));
 }
 
-auto evaluate_modulo(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Modulo::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for %"};
     }
-    auto const b = pop_top(stack);
-    auto const a = pop_top(stack);
-    stack.push(fmod(a, b));
+    int const b = pop_top(stack);
+    int const a = pop_top(stack);
+    stack.push(a % b);
 }
 
-auto evaluate_exponentiation(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Exponentiation::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 2) {
         throw std::logic_error{"not enough operands for **"};
     }
@@ -94,8 +100,7 @@ auto evaluate_exponentiation(std::stack<double>& stack) -> void
     stack.push(pow(a, b));
 }
 
-auto evaluate_square_root(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Square_Root::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 1) {
         throw std::logic_error{"not enough operands for sqrt"};
     }
@@ -103,10 +108,9 @@ auto evaluate_square_root(std::stack<double>& stack) -> void
     stack.push(sqrt(a));
 }
 
-auto evaluate_factorial(std::stack<double>& stack) -> void
-{
+auto s22020::rpn_calculator::Factorial::evaluate(stack_type& stack) const -> void {
     if (stack.size() < 1) {
-        throw std::logic_error{"not enough operands for factorial"};
+        throw std::logic_error{"not enough operands for !"};
     }
     auto const a = pop_top(stack);
     auto tmp     = 1;
@@ -117,6 +121,27 @@ auto evaluate_factorial(std::stack<double>& stack) -> void
     stack.push(b);
 }
 
+s22020::rpn_calculator::Calculator::Calculator(stack_type s) : stack{std::move(s)}
+{}
+
+auto s22020::rpn_calculator::Calculator::push(std::unique_ptr<Element> op) -> void {
+    ops.push(std::move(op));
+}
+
+/*auto s22020::rpn_calculator::Calculator::push(std::string op) {
+    ops.push(std::move(op));
+}*/
+
+auto s22020::rpn_calculator::Calculator::evaluate() -> void {
+    while (not ops.empty()) {
+        // bierze wartosc z poczatku kolejki
+        auto op = std::move(ops.front());
+        ops.pop();
+        // strzalka bo dostaje sie do skladowej do wskaznika alokowanego dynamicznie
+        op->evaluate(stack);
+    }
+}
+
 
 auto make_args(int argc, char* argv[]) -> std::vector<std::string>
 {
@@ -125,39 +150,45 @@ auto make_args(int argc, char* argv[]) -> std::vector<std::string>
     return args;
 }
 
+
 auto main(int argc, char* argv[]) -> int
 {
     auto const args = make_args(argc - 1, argv + 1);
-
     auto stack = std::stack<double>{};
+    auto calculator = s22020::rpn_calculator::Calculator{};
     for (auto const each : args) {
         try {
             if (each == "p") {
-                std::cout << pop_top(stack) << "\n";
+                calculator.push(std::make_unique<s22020::rpn_calculator::Print>());
             } else if (each == "+") {
-                evaluate_addition(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Addition>());
             } else if (each == "-") {
-                evaluate_subtraction(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Subtraction>());
             } else if (each == "*") {
-                evaluate_multiplication(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Multiplication>());
             } else if (each == "/") {
-                evaluate_division(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Division>());
             } else if (each == "//") {
-                evaluate_int_division(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Int_Division>());
             } else if (each == "%") {
-                evaluate_modulo(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Modulo>());
             } else if (each == "**") {
-                evaluate_exponentiation(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Exponentiation>());
             } else if (each == "sqrt") {
-                evaluate_square_root(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Square_Root>());
             } else if (each == "!") {
-                evaluate_factorial(stack);
+                calculator.push(std::make_unique<s22020::rpn_calculator::Factorial>());
             } else {
-                stack.push(std::stod(each));
+                calculator.push(std::make_unique<s22020::rpn_calculator::Literal>(std::stod(each)));
             }
         } catch (std::logic_error const& e) {
             std::cerr << "error: " << each << ": " << e.what() << "\n";
         }
+    }
+    try {
+        calculator.evaluate();
+    } catch (std::logic_error const& e) {
+        std::cerr << "error: during evaluation: " << e.what() << "\n";
     }
 
     return 0;

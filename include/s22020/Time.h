@@ -11,11 +11,7 @@ struct Time {
     unsigned minute{0};
     unsigned second{0};
     enum class Time_of_day { Morning, Day, Evening, Night };
-    /*
-    pozamieniac wszystkie operacje typu next hour, operatory itp na sekundy i
-    potem na tej podstawie podzielic wszystko na 24h i 60 minut i sekund i wtedy
-    zwrocic wynik
-    */
+    
     Time(unsigned, unsigned, unsigned);
 
     auto convert_to_seconds(Time const&) const -> int;
