@@ -124,46 +124,28 @@ auto s22020::Time::operator<(Time const& time) const -> bool
 {
     auto current_seconds = convert_to_seconds(*this);
     auto new_seconds     = convert_to_seconds(time);
-    if (current_seconds < new_seconds) {
-        std::cout << "prawda";
-        return true;
-    } else {
-        std::cout << "falsz";
-        return false;
-    }
+    return (current_seconds < new_seconds);
 }
 
 auto s22020::Time::operator>(Time const& time) const -> bool
 {
     auto current_seconds = convert_to_seconds(*this);
     auto new_seconds     = convert_to_seconds(time);
-    if (current_seconds > new_seconds) {
-        return true;
-    } else {
-        return false;
-    }
+    return (current_seconds > new_seconds);
 }
 
 auto s22020::Time::operator==(Time const& time) const -> bool
 {
     auto current_seconds = convert_to_seconds(*this);
     auto new_seconds     = convert_to_seconds(time);
-    if (current_seconds == new_seconds) {
-        return true;
-    } else {
-        return false;
-    }
+    return (current_seconds == new_seconds);
 }
 
 auto s22020::Time::operator!=(Time const& time) const -> bool
 {
     auto current_seconds = convert_to_seconds(*this);
     auto new_seconds     = convert_to_seconds(time);
-    if (current_seconds != new_seconds) {
-        return true;
-    } else {
-        return false;
-    }
+    return (current_seconds != new_seconds);
 }
 
 auto s22020::Time::count_seconds() const -> uint64_t

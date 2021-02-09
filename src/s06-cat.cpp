@@ -4,6 +4,8 @@
 #include <string>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fstream>
+#include <array>
 
 // definicja konstruktora
 // std::move - zamiast kopiowania przesuwa wartosci i dzieki temu program dziala
@@ -36,26 +38,20 @@ auto s22020::Student::to_string() const -> std::string
     return output.str();
 }
 
-auto main() -> int {
-    std::string first,last,index_no;
-    float grade;
-    std::cout << "Enter student's data.\nFirst name: ";
-    std::cin >> first;
-    std::cout << "Last name: ";
-    std::cin >> last;
-    std::cout << "Index number: ";
-    std::cin >> index_no;
-    std::cout << "Grade: ";
-    std::cin >> grade;
-    auto student = s22020::Student{first,last,index_no,grade};
-    auto name = std::string{"./build/student.txt"};
+auto main(int argc, char* argv[]) -> int {
+    if (argc != 2) {
+        throw std::logic_error{"Invalid arguments amount"};
+    }
+    auto name = std::string{argv[1]};
     auto fd = open(name.c_str(), O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
-    // write
-    auto buf = std::string{student.firstname + "\n" + student.lastname + "\n" + student.index_no + "\n" + std::to_string(student.grade_avg) + "\n"};
-    auto n = write(fd, buf.data(), buf.size());
+    std::array<char, 4096> buf { 0 };
+    auto const n = read(fd, buf.data(), buf.size());
     if (n == -1) {
-        perror("write(2)");
+        perror("read (2)");
+    } else {
+        std::cout << std::string{buf.data(), static_cast<size_t>(n)};
     }
     close(fd);
+
     return 0;
 }
