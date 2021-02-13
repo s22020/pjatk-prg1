@@ -2,9 +2,8 @@ CXX=g++
 CXXSTD=c++17
 CXXWARNINGS=\
 		   -Wall \
-		   -Wextra \
-		   -Wpedantic \
-		   -Werror \
+           -Werror \
+           -Wpedantic \
 		   -Wfatal-errors
 CXXINCLUDES=\
 			-I./include
@@ -13,6 +12,8 @@ CXXFLAGS=\
 		 -std=$(CXXSTD) \
 		 $(CXXWARNINGS) \
 		 $(CXXINCLUDES)
+
+LIBS=-lcryptopp
 
 all:\
 	build/00-hello-world.bin \

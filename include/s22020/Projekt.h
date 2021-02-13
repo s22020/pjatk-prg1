@@ -13,9 +13,6 @@ struct Entry {
     std::string url{};
     
     Entry(std::string, std::string, std::string, std::string);
-    // generate random number in given ASCII range
-    auto generate_ascii_dec(unsigned, unsigned) -> char;
-    
 };
 }  // namespace s22020
 #endif
